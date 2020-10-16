@@ -1,5 +1,6 @@
 import execa from 'execa'
 import terminalLink from 'terminal-link'
+import { getProject } from '@redwoodjs/structure'
 import { ensurePosixPath } from '@redwoodjs/internal'
 
 import { getPaths } from 'src/lib'
@@ -26,10 +27,13 @@ function isInMercurialRepository() {
 
 export const command = 'test [side..]'
 export const description = 'Run Jest tests. Defaults to watch mode'
-export const builder = async (yargs) => {
-  const { getProject } = await import('@redwoodjs/structure')
+export const builder = (yargs) => {
   yargs
-    .choices('side', getProject().sides)
+    .positional('side', {
+      choices: getProject().sides,
+      default: getProject().sides,
+      description: 'Which side(s) to test',
+    })
     .option('watch', {
       describe:
         'Run tests related to changed files based on hg/git. Specify the name or path to a file to focus on a specific set of tests',
